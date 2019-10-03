@@ -2,11 +2,9 @@ import os
 import re
 
 txt = open('words.txt', 'r', encoding='UTF-8')
-f = open("new.txt", 'a')
+f = open("new.txt", 'w')
 
 words = txt.readline()
-
-
 
 while words:
     words = words.strip("\n")
@@ -16,11 +14,9 @@ while words:
     # print(words.split("="))
 
     # 删除系统自带
-    if "{" in words:
-        left_1 = words.split(",")[1]
-        left = left_1.split("=")[0]
-        right = words.split("}")[1]
-        number = words.split(",")[0]
+
+    left = words.split("=")[0]
+    right = words.split(",")[1]
 
     # print(left)
     # print(right)
@@ -30,11 +26,23 @@ while words:
 
     # ff=2,方法ff
 
-        end = left + "=" + number + "," + right
-        print(end)
+    end = left + "," + right
+    print(end)
 
-        f.write(end)
-        f.write("\n")
+
+
+    f.write("	<dict>")
+    f.write("\n")
+    f.write("		<key>phrase</key>")
+    f.write("\n")
+    f.write("		<string>{}</string>".format(right))
+    f.write("\n")
+    f.write("		<key>shortcut</key>")
+    f.write("\n")
+    f.write("		<string>{}</string>".format(left))
+    f.write("\n")
+    f.write("	</dict>")
+    f.write("\n")
 
     words = txt.readline()
 
