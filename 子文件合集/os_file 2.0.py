@@ -138,23 +138,6 @@ def copy_files(old_dir, new_dir):
                         pass
             else:
                 not_same = True
-                # todo
-                # 去重
-                # if name in name_list:
-                #     new_file_path = new_dir + name
-                #     print(old_file_path)
-                #     print(new_file_path)
-                #     if bytes_size == name_size_dict[name]:
-                #         file_same_times += 1
-                #         print("文件完全重复 all_same, 文件目录为{}".format(old_file_path))
-                # try:
-                #     if filecmp.cmp(old_file_path, new_file_path):
-                #         same = True
-                #     # os.path.samefile(old_file_path, new_file_path)
-                #         print("文件完全重复 all_same, 文件目录为{}".format(old_file_path))
-                # except:
-                #     pass
-                # file_copy_times += 1
 
 
 def class_file(new_dir):
