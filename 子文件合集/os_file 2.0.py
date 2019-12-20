@@ -9,6 +9,7 @@ import random
 import sys
 import filecmp
 import winshell
+# import pandoc
 
 # 计算次数
 folders = 0
@@ -113,7 +114,6 @@ def copy_files(old_dir, new_dir):
                 if filecmp.cmp(old_file_path, new_file_path):
                     not_same = False
                     file_same_times += 1
-                # os.path.samefile(old_file_path, new_file_path)
                     # print("文件完全重复 all_same, 文件目录为{}".format(old_file_path))
             except:
                 pass
@@ -231,8 +231,10 @@ if __name__ == "__main__":
     # print(new_dir)
 
     # copy_files(old_dir, new_dir)
-    init_file('E:/Files/')
-    copy_files('F:/网课Wk/Python 24期/python课件/18.数据挖掘', 'E:/Files/')
-    class_file('E:/Files/')
+    file_path = 'E:/Giles/'
+    init_file(file_path)
+    # copy_files('F:/网课Wk/Python 24期/python课件/18.数据挖掘', 'E:/Files/')
+    copy_files("E:/Test", file_path)
+    # class_file(file_path)
     summary()
 

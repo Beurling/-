@@ -131,5 +131,5 @@ def copy_files(source_dir, target_dir):
 
 
 if __name__ == "__main__":
-    copy_files('F:/Onedrive/编程 Computer Programming/代码云 - Dmy/爬虫代码云 - Pcdmy/爬虫课件/爬虫课件 黑马 24期', 'E:/Files/')
+    copy_files('F:/网课Wk/Python 24期/python课件/18.数据挖掘', 'E:/Files/')
 
