@@ -9,7 +9,11 @@ import random
 import sys
 import filecmp
 import winshell
+import pypandoc
+import pdfkit
 # import pandoc
+config = pdfkit.configuration(wkhtmltopdf=r"E:\OneDrive\编程 Computer Programming\IDE\wkhtmltox\bin\wkhtmltopdf.exe")
+
 
 # 计算次数
 folders = 0
@@ -185,13 +189,40 @@ def class_file(new_dir):
                 pass
 
             os.remove(new_file)
-        elif name.endswith(".pptx") or name.endswith(".pdf") or name.endswith(".zip") or name.endswith(".md") or name.endswith(".xmind") or name.endswith(".csv") or name.endswith(".exe") or name.endswith(".txt") or name.endswith(".ipynb") or name.endswith(".docx") or name.endswith(".xlsx"):
+        elif name.endswith(".pptx") or name.endswith(".pdf") or name.endswith(".zip") or name.endswith(".xmind") or name.endswith(".csv") or name.endswith(".exe") or name.endswith(".txt") or name.endswith(".docx") or name.endswith(".xlsx"):
             try:
                 open(new_file[:9] + 'file/' + name, "wb").write(open(new_file, "rb").read())
             except:
                 pass
 
             os.remove(new_file)
+        # ipynb 转 html 再转 docx
+        # jupyter nbconvert --to html day01_matplotlib.ipynb
+        elif name.endswith(".ipynb"):
+            try:
+                open(new_file[:9] + 'file/' + name, "wb").write(open(new_file, "rb").read())
+                os.chdir("E:\\" + "Giles\\" + "file\\")
+                os.system("jupyter nbconvert --to html " + name)
+
+                pdfkit.from_file(new_file[:9] + 'file/' + name[:-6] + ".html", new_file[:9] + 'file/' + name[:-6] + ".pdf", configuration=config)
+                # pypandoc.convert_file(new_file[:9] + 'file/' + name, 'pdf', format='html', outputfile=new_file[:9] + 'file/' + name[:-6] + ".docx")
+                # os.remove(new_file[:9] + 'file/' + name)
+
+            except:
+                pass
+
+            os.remove(new_file)
+        # 直接md转word
+        elif name.endswith(".md"):
+            try:
+                open(new_file[:9] + 'file/' + name, "wb").write(open(new_file, "rb").read())
+                pypandoc.convert_file(new_file[:9] + 'file/' + name, 'docx', format='md', outputfile=new_file[:9] + 'file/' + name[:-3] + ".docx")
+                os.remove(new_file[:9] + 'file/' + name)
+            except:
+                pass
+
+            os.remove(new_file)
+
         elif name.endswith(".xml") or name.endswith(".iml"):
             try:
                 open(new_file[:9] + 'ignore/' + name, "wb").write(open(new_file, "rb").read())
@@ -211,7 +242,7 @@ def class_file(new_dir):
 
 
 def summary():
-    print("共处理{}个文件夹\n复制{}个文件\n完全重复{}个文件\n超过{}MB文件{}个\n超大文件目录{}\n目录{}".format(folders, file_copy_times, file_same_times, file_limit, big_file_times, big_file_dict, name_size_dict))
+    print("共处理{}个文件，{}个文件夹\n复制{}个文件\n完全重复{}个文件\n超过{}MB文件{}个\n超大文件目录{}\n目录{}".format(file_copy_times + file_same_times, folders, file_copy_times, file_same_times, file_limit, big_file_times, big_file_dict, name_size_dict))
 
 
 if __name__ == "__main__":
@@ -234,7 +265,9 @@ if __name__ == "__main__":
     file_path = 'E:/Giles/'
     init_file(file_path)
     # copy_files('F:/网课Wk/Python 24期/python课件/18.数据挖掘', 'E:/Files/')
-    copy_files("E:/Test", file_path)
-    # class_file(file_path)
+    # 手动 右斜杠 改为 左斜杠
+    old_path = 'F:/网课/Python/2019 24期 黑马/Python 24期/18.数据挖掘'
+    copy_files(old_path, file_path)
+    class_file(file_path)
     summary()
 
