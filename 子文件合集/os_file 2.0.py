@@ -14,12 +14,17 @@ import pdfkit
 # import pandoc
 config = pdfkit.configuration(wkhtmltopdf=r"E:\OneDrive\编程 Computer Programming\IDE\wkhtmltox\bin\wkhtmltopdf.exe")
 
+# todo 程序运行时间
+# todo gtibook 文件名重复 导致覆盖
 
 # 计算次数
 folders = 0
 file_copy_times = 0
 repeat_times = 0
 file_same_times = 0
+
+count_folder = 0
+count_file = 0
 
 new_name_number = 0
 not_same = True
@@ -30,7 +35,10 @@ big_file_times = 0
 
 name_list = []
 size_list = []
-name_size_dict = {}
+old_name_list = []
+old_size_list = []
+new_name_size_dict = {}
+old_name_size_dict = {}
 big_file_dict = {}
 big_file_path = []
 big_file_size = []
@@ -78,7 +86,7 @@ def init_file(new_dir):
 
 
 def copy_files(old_dir, new_dir):
-    global file_copy_times, big_file_dict, size_list, big_file_path, big_file_size, not_same, new_name_number, file_same_times, file_limit, name_list, name_size_dict, repeat_times, folders, big_file_times
+    global file_copy_times, big_file_dict, old_name_size_dict, old_name_list, old_size_list, size_list, big_file_path, big_file_size, not_same, new_name_number, file_same_times, file_limit, name_list, new_name_size_dict, repeat_times, folders, big_file_times
 
     # 用于随机命名文件，避免重复
     number = str(random.uniform(2, 4))
@@ -132,6 +140,11 @@ def copy_files(old_dir, new_dir):
 
                 short_cut(new_file_path, old_file_path)
             elif not_same:
+                old_name_list.append(name)
+                old_size_list.append(size)
+
+                old_name_size_dict = dict(zip(old_name_list, old_size_list))
+
                 file_copy_times += 1
                 try:
                     open(new_file[:9] + name, "wb").write(open(old_file_path, "rb").read())
@@ -145,7 +158,7 @@ def copy_files(old_dir, new_dir):
 
 
 def class_file(new_dir):
-    global name_size_dict, big_file_dict, big_file_path, big_file_size, big_file_times, file_limit
+    global new_name_size_dict, big_file_dict, big_file_path, big_file_size, big_file_times, file_limit
     for name in os.listdir(new_dir):
         # print(name)
         new_file = os.path.join(new_dir, name)
@@ -154,7 +167,7 @@ def class_file(new_dir):
         name_list.append(name)
         size_list.append(size)
 
-        name_size_dict = dict(zip(name_list, size_list))
+        new_name_size_dict = dict(zip(name_list, size_list))
 
         if size > 50:
             pass
@@ -204,7 +217,8 @@ def class_file(new_dir):
                 os.chdir("E:\\" + "Giles\\" + "file\\")
                 os.system("jupyter nbconvert --to html " + name)
 
-                pdfkit.from_file(new_file[:9] + 'file/' + name[:-6] + ".html", new_file[:9] + 'file/' + name[:-6] + ".pdf", configuration=config)
+                # 暂停转pdf html足够好了
+                # pdfkit.from_file(new_file[:9] + 'file/' + name[:-6] + ".html", new_file[:9] + 'file/' + name[:-6] + ".pdf", configuration=config)
                 # pypandoc.convert_file(new_file[:9] + 'file/' + name, 'pdf', format='html', outputfile=new_file[:9] + 'file/' + name[:-6] + ".docx")
                 # os.remove(new_file[:9] + 'file/' + name)
 
@@ -241,8 +255,40 @@ def class_file(new_dir):
         # print(u"%s %s 复制完毕" % (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), new_file))
 
 
+def count_files(new_dir):
+    global count_folder, count_file
+    for name in os.listdir(new_dir):
+        # 文件名 name
+
+        # 文件路径 | 拼接路径和名字
+        new_file_path = os.path.join(new_dir, name)
+        print(new_file_path)
+
+        # print(old_file_path)
+
+        # 如果是文件夹，就切换到当前文件夹
+        if os.path.isdir(new_file_path):
+            # print("文件夹")
+            # 用于递归
+            new_file = new_dir
+            # 文件夹次数+1
+            count_folder += 1
+
+            # 进入子文件夹
+            count_files(new_file_path)
+
+        # 如果是文件，直接添加到当前文件夹
+        else:
+            # print("文件")
+            count_file += 1
+
+
 def summary():
-    print("共处理{}个文件，{}个文件夹\n复制{}个文件\n完全重复{}个文件\n超过{}MB文件{}个\n超大文件目录{}\n目录{}".format(file_copy_times + file_same_times, folders, file_copy_times, file_same_times, file_limit, big_file_times, big_file_dict, name_size_dict))
+    diff = old_name_size_dict.items() - new_name_size_dict.items()
+    print("旧文件目录{}".format(old_name_size_dict))
+    print("消失{}".format(diff))
+    print("共处理{}个文件，{}个文件夹\n复制{}个文件\n完全重复{}个文件\n超过{}MB文件{}个\n超大文件目录{}\n新文件目录{}".format(file_copy_times + file_same_times, folders, file_copy_times, file_same_times, file_limit, big_file_times, big_file_dict, new_name_size_dict))
+    print("新文件{}个文件，{}个文件夹\n损失{}个文件".format(count_file, count_folder, file_copy_times - count_file))
 
 
 if __name__ == "__main__":
@@ -265,9 +311,12 @@ if __name__ == "__main__":
     file_path = 'E:/Giles/'
     init_file(file_path)
     # copy_files('F:/网课Wk/Python 24期/python课件/18.数据挖掘', 'E:/Files/')
-    # 手动 右斜杠 改为 左斜杠
-    old_path = 'F:/网课/Python/2019 24期 黑马/Python 24期/18.数据挖掘'
+
+    # 旧 手动 右斜杠 改为 左斜杠
+    # 新 加上 r 代表raw 素的路径，直接复制粘贴
+    old_path = r'F:\网课\Python\2019 24期 黑马\Python 24期\20 机器学习\28-机器学习'
     copy_files(old_path, file_path)
     class_file(file_path)
+    count_files(file_path)
     summary()
 
