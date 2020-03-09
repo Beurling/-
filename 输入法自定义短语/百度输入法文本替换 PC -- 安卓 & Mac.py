@@ -4,6 +4,7 @@
 # 安卓端需要将ANSI编码手动转为UTF-16-LE
 # mac转为utf-8 手动复制
 # mac需要删除原来的，再复制 否则旧的会保留
+# PC端复制源文件，而不是txt，因为txt格式已经改变
 txt = open('自定义短语导出.txt', 'r', encoding='UTF-8')
 Android = open("cphrase.ini", 'w')
 Mac = open("用户词典.txt", 'w')
