@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo -e "\n"
 cd /root
 apt-get install xrdp tigervnc-standalone-server -y
