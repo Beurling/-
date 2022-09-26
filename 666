@@ -1,0 +1,42 @@
+import requests
+import re
+
+post_url = 'https://sctapi.ftqq.com/SCT171111TfyLo3sI2b4k0LSZUPFoJw.send'
+
+switch_eshop_cookie = 'cf_clearance=mvo7lHz3KEr.voA_k5peh_NzdtyIAZoX63qGSQDncJc-1662855987-0-250; wishlist=9179.597.55.7212.'
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+    'Cookie': switch_eshop_cookie
+}
+
+x = requests.get('https://eshop-prices.com/wishlist?currency=CNY', headers=headers)
+# print(x.status_code)
+# print(x.text)
+# type(x.text)
+
+# ￥
+prices = re.findall("del>\n\u00A5[0-9]*\.[0-9]*", x.text)
+games = re.findall('[a-z"= <\n>0-9/®A-Z]*discount--warning', x.text)
+
+number = -1
+
+if prices != []:
+    for game in games:
+        number += 1
+        game = game.split("h5>")
+        game = game[1]
+        game = game.split("<")
+        game = game[0]
+        print(game)
+        # print(number)
+        price = prices[number]
+        price = price.split("\n")
+        price = price[1]
+        print(price)
+        data = {
+            'title': game,
+            'desp': price 
+        }
+        requests.post(post_url, data=data)
+
